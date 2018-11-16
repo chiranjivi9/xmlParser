@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+"beautifulsoup4" = "*"
+lxml = "*"
+"f22df08" = {file = "http://effbot.org/media/downloads/elementtree-1.2.7-20070827-preview.zip"}
+elementtree = "*"
+werkzeug = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
