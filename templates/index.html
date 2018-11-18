@@ -20,20 +20,6 @@
       </label>
       <input type="submit" value="Upload" class="btn btn-primary">
   </form>
-
-  <div class="text-center">
-      {% if init %}
-          {% if invalidImage %}
-              <div class="alert alert-danger" style="margin-top:18px;">
-                  <strong>Error</strong> Your image contain invalid content !
-              </div>
-          {% else %}
-              <div class="alert alert-success" style="margin-top:18px;">
-                  <strong>Success!</strong> Your image was upload successfully
-              </div>
-          {% endif %}
-      {% endif %}
-  </div>
 </div>
 </body>
 </html>
