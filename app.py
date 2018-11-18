@@ -1,4 +1,5 @@
 import os
+import json
 import glob
 from flask import Flask, render_template, request, jsonify
 from bs4 import BeautifulSoup
@@ -19,56 +20,60 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def hello_world():
     return render_template('index.html')
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST','GET'])
 def upload_file():
+    if request.method == 'POST':
+        file = request.files['image']
+        f = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        # add your custom code to check that the uploaded file is a valid image and not a malicious file (out-of-scope for this post)
+        file.save(f)
 
-    file = request.files['image']
-    f = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    # add your custom code to check that the uploaded file is a valid image and not a malicious file (out-of-scope for this post)
-    file.save(f)
+        with open(f,'r') as myfile:
+            data=myfile.read().replace('\n', ' ')
+        #print(data)
+        clean_data = remove_tags(data)
+        print(clean_data)
+        # , an individual
+        # m = re.search("Attorneys for Plaintiff (\w+) (\w+)", clean_data)
+        clean_data = re.sub(',',' ',clean_data)
+        clean_data = re.sub(' +',' ',clean_data)
+        m = re.search("FOR THE COUNTY OF (\w+) (\w+) (\w+)",clean_data)
+        if m is None:
+            m = re.search("(\w+) (\w+) an individual",clean_data)
+        print("Plaintiff is: " + m.group(1) + " " + m.group(2))
 
-    with open(f,'r') as myfile:
-        data=myfile.read().replace('\n', ' ')
-    #print(data)
-    clean_data = remove_tags(data)
-    print(clean_data)
-    # , an individual
-    # m = re.search("Attorneys for Plaintiff (\w+) (\w+)", clean_data)
-    clean_data = re.sub(',',' ',clean_data)
-    clean_data = re.sub(' +',' ',clean_data)
-    m = re.search("FOR THE COUNTY OF (\w+) (\w+) (\w+)",clean_data)
-    if m is None:
-        m = re.search("(\w+) (\w+) an individual",clean_data)
-    # else:
-    #     m = re.search("Attorneys for Plaintiff (\w+) (\w+)",clean_data)
-    # else:
-    #     m = re.search("FOR THE COUNTY OF (\w+) (\w+) (\W+)", clean_data)
-    print("Plaintiff is: " + m.group(1) + " " + m.group(2))
+        result = re.search('vs.(.*)Defendants', clean_data)
+        if result is None:
+            result = re.search('v.(.*)j Defendants.', clean_data)
+        print("Defendent is:" + result.group(1))
 
-    result = re.search('vs.(.*)Defendants', clean_data)
-    if result is None:
-        result = re.search('v.(.*)j Defendants.', clean_data)
-    print("Defendent is:" + result.group(1))
+        # save to file
+        file_name = os.path.splitext(os.path.basename(f))[0]
+        # print(file_name)
 
-    # save to file
-    file_name = os.path.splitext(os.path.basename(f))[0]
-    print(file_name)
-
-
-    parsed_file = open(SAVE_FOLDER + '/' + file_name + '.txt', 'w') #open the file(this will not only open the file also
-    #if you had one will create a new one on top or it would create one if you
-    #didn't have one
-    parsed_file.write("Plaintiff is: " + m.group(1) + " " + m.group(2) + "\n \nDefendent is:" + result.group(1)) #this will put the info in the file
-    parsed_file.close()
+        parsed_file = open(SAVE_FOLDER + '/' + file_name + '.txt', 'w') #open the file(this will not only open the file also
+        #if you had one will create a new one on top or it would create one if you
+        #didn't have one
+        parsed_file.write(
+            "Plaintiff is: " + m.group(1)+ " " + m.group(2) + " " +
+            "Defendent is: " + result.group(1)
+            )
+         # "Plaintiff is: " + m.group(1) + " " + m.group(2) + "\n \nDefendent is:" + result.group(1))
+         #this will put the info in the file
+        parsed_file.close()
+        return ("Plaintiff is: " + m.group(1) + " " + m.group(2) +"\n"+ "Defendent is:" + result.group(1))
     return render_template('success.html')
 
 def remove_tags(text):
     TAG_RE = re.compile(r'<[^>]+>')
     return TAG_RE.sub('', text)
 
-@app.route('/getfile', methods=['GET'])
-def get_file():
-    return (SAVE_FOLDER)
+@app.route('/lawsuit/<file_name>', methods=['GET'])
+def getfile(file_name):
+    print(file_name)
+    with open(SAVE_FOLDER + "/" + file_name + ".txt", 'r') as myfile:
+        data=myfile.read().replace('\n', '')
+    return (data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, threaded=True, debug=True)
