@@ -1,5 +1,5 @@
 # xmlParser
-Parse the given XML file and extract data from the file using API calls
+Parse the given XML file and extract data related to specific keywords from the file using API calls
 
 # Clone it
 
@@ -12,6 +12,7 @@ Parse the given XML file and extract data from the file using API calls
   >pipenv install
 
 # Run it
-
+```
 >pipenv shell
 >flask run
+```
