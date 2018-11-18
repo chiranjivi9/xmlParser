@@ -1,17 +1,17 @@
 # xmlParser
 Parse the given XML file and extract data from the file using API calls
 
-#Clone it
+# Clone it
 
-In terminal
-git clone https://github.com/chiranjivi9/xmlParser.git
+## In terminal
+>git clone https://github.com/chiranjivi9/xmlParser.git
 
 # Installing all the libraries
 
-## MacOS: 
-  pipenv install
+## MacOS:
+  >pipenv install
 
-#Run it
+# Run it
 
-pipenv shell
-flask run
+>pipenv shell
+>flask run
