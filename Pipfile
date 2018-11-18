@@ -10,6 +10,8 @@ lxml = "*"
 "f22df08" = {file = "http://effbot.org/media/downloads/elementtree-1.2.7-20070827-preview.zip"}
 elementtree = "*"
 werkzeug = "*"
+"glob3" = "*"
+connexion = "*"
 
 [dev-packages]
 
